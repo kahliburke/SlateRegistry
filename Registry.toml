@@ -4,3 +4,4 @@ repo = "git@github.com:kahliburke/SlateRegistry.git"
 description = "Kaimon Slate and its extension packages"
 
 [packages]
+bc31d39e-4442-48fa-b9ae-1bd99fed63f7 = { name = "SlateExtensionsBase", path = "S/SlateExtensionsBase" }
