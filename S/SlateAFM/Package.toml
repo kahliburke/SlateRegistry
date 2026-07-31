@@ -1,0 +1,4 @@
+name = "SlateAFM"
+uuid = "48bdd467-e615-4c42-bca2-e391cca8438c"
+repo = "https://github.com/kahliburke/KaimonSlate.jl.git"
+subdir = "examples/extensions/SlateAFM"
