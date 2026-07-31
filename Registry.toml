@@ -4,6 +4,7 @@ repo = "git@github.com:kahliburke/SlateRegistry.git"
 description = "Kaimon Slate and its extension packages"
 
 [packages]
+037ed0f0-9d4a-4e15-a26b-b7623adf1440 = { name = "CesiumSlate", path = "C/CesiumSlate" }
 06afbefc-9613-4bb7-bc4a-f7a72d2076db = { name = "StarRating", path = "S/StarRating" }
 141e1fc3-13f6-4de8-b22a-97670e9194c6 = { name = "SlatePlotly", path = "S/SlatePlotly" }
 4293ad4b-9d1e-41b5-a698-562d6dfeffbe = { name = "SlateAssess", path = "S/SlateAssess" }
