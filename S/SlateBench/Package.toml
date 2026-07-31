@@ -1,0 +1,3 @@
+name = "SlateBench"
+uuid = "34dae1dd-9e9d-4399-81aa-9d72c5d23232"
+repo = "https://github.com/kahliburke/SlateBench.jl.git"
