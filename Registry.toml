@@ -1,0 +1,6 @@
+name = "SlateRegistry"
+uuid = "019e0f08-741e-4356-9487-3a1cba3794af"
+repo = "git@github.com:kahliburke/SlateRegistry.git"
+description = "Kaimon Slate and its extension packages"
+
+[packages]
