@@ -9,4 +9,5 @@ description = "Kaimon Slate and its extension packages"
 141e1fc3-13f6-4de8-b22a-97670e9194c6 = { name = "SlatePlotly", path = "S/SlatePlotly" }
 4293ad4b-9d1e-41b5-a698-562d6dfeffbe = { name = "SlateAssess", path = "S/SlateAssess" }
 bc31d39e-4442-48fa-b9ae-1bd99fed63f7 = { name = "SlateExtensionsBase", path = "S/SlateExtensionsBase" }
+f4c9f34b-fa6a-4506-9309-e8c0bac809fa = { name = "GiacSlate", path = "G/GiacSlate" }
 f7b954f5-0334-4562-ac21-b005218ce1da = { name = "KaimonSlate", path = "K/KaimonSlate" }
