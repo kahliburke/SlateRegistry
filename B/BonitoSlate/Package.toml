@@ -1,0 +1,4 @@
+name = "BonitoSlate"
+uuid = "9172b072-6bcf-488b-b185-96c3319d1521"
+repo = "https://github.com/kahliburke/KaimonSlate.jl.git"
+subdir = "examples/extensions/BonitoSlate"

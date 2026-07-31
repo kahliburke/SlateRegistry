@@ -10,6 +10,7 @@ description = "Kaimon Slate and its extension packages"
 3407f95d-69fb-4d30-a5a8-720a6642c965 = { name = "GlobeSlate", path = "G/GlobeSlate" }
 34dae1dd-9e9d-4399-81aa-9d72c5d23232 = { name = "SlateBench", path = "S/SlateBench" }
 4293ad4b-9d1e-41b5-a698-562d6dfeffbe = { name = "SlateAssess", path = "S/SlateAssess" }
+9172b072-6bcf-488b-b185-96c3319d1521 = { name = "BonitoSlate", path = "B/BonitoSlate" }
 bc31d39e-4442-48fa-b9ae-1bd99fed63f7 = { name = "SlateExtensionsBase", path = "S/SlateExtensionsBase" }
 f4c9f34b-fa6a-4506-9309-e8c0bac809fa = { name = "GiacSlate", path = "G/GiacSlate" }
 f7b954f5-0334-4562-ac21-b005218ce1da = { name = "KaimonSlate", path = "K/KaimonSlate" }
