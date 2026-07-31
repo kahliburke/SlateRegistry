@@ -1,0 +1,4 @@
+name = "StarRating"
+uuid = "06afbefc-9613-4bb7-bc4a-f7a72d2076db"
+repo = "https://github.com/kahliburke/KaimonSlate.jl.git"
+subdir = "examples/extensions/StarRating"
