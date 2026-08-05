@@ -1,7 +1,7 @@
 name = "SlateRegistry"
 uuid = "019e0f08-741e-4356-9487-3a1cba3794af"
 repo = "git@github.com:kahliburke/SlateRegistry.git"
-description = "Kaimon Slate and its extension packages"
+description = "Kaimon Slate extension packages"
 
 [packages]
 037ed0f0-9d4a-4e15-a26b-b7623adf1440 = { name = "CesiumSlate", path = "C/CesiumSlate" }
@@ -12,6 +12,4 @@ description = "Kaimon Slate and its extension packages"
 4293ad4b-9d1e-41b5-a698-562d6dfeffbe = { name = "SlateAssess", path = "S/SlateAssess" }
 48bdd467-e615-4c42-bca2-e391cca8438c = { name = "SlateAFM", path = "S/SlateAFM" }
 9172b072-6bcf-488b-b185-96c3319d1521 = { name = "BonitoSlate", path = "B/BonitoSlate" }
-bc31d39e-4442-48fa-b9ae-1bd99fed63f7 = { name = "SlateExtensionsBase", path = "S/SlateExtensionsBase" }
 f4c9f34b-fa6a-4506-9309-e8c0bac809fa = { name = "GiacSlate", path = "G/GiacSlate" }
-f7b954f5-0334-4562-ac21-b005218ce1da = { name = "KaimonSlate", path = "K/KaimonSlate" }

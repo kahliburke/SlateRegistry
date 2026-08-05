@@ -1,11 +1,15 @@
 # SlateRegistry
 
-A Julia package registry for [Kaimon Slate](https://github.com/kahliburke/KaimonSlate.jl) and
-its extension packages, which aren't in the General registry.
+A Julia package registry for [Kaimon Slate](https://github.com/kahliburke/KaimonSlate.jl)
+extension packages that aren't in the General registry.
+
+`KaimonSlate` and `SlateExtensionsBase` are **in General** — you do not need this registry to
+install Slate or to write an extension against the SDK. This registry carries only the extension
+packages themselves.
 
 This repository is public and contains only package metadata — names, versions and repository
-URLs. Some of the packages it points at are private; installing those still requires access to
-their repositories.
+URLs. Most of the packages it points at are private; installing those requires access to their
+repositories.
 
 ## Use
 
@@ -16,11 +20,11 @@ pkg> registry add https://github.com/kahliburke/SlateRegistry
 ```
 
 It sits alongside General rather than replacing it — Pkg searches every installed registry, so
-ordinary packages keep resolving as usual. After that, Slate installs like any other package:
+ordinary packages keep resolving as usual. After that, an extension installs like any other
+package:
 
 ```julia-repl
-pkg> app add KaimonSlate      # the `slate` launcher
-pkg> add SlateAssess          # an extension, into your notebook's environment
+pkg> add SlateAssess          # into your notebook's environment
 ```
 
 Registries are cached locally, so a newly published version isn't visible until you refresh:
@@ -36,10 +40,15 @@ registry is the usual cause.
 
 | Package | Repository | Visibility |
 |---|---|---|
-| `KaimonSlate` | [KaimonSlate.jl](https://github.com/kahliburke/KaimonSlate.jl) | public |
-| `SlateExtensionsBase` | KaimonSlate.jl, `lib/SlateExtensionsBase` | public |
-| `SlatePlotly` | SlatePlotly.jl | private |
+| `BonitoSlate` | [KaimonSlate.jl](https://github.com/kahliburke/KaimonSlate.jl), `examples/extensions/BonitoSlate` | public |
+| `SlateAFM` | KaimonSlate.jl, `examples/extensions/SlateAFM` | public |
+| `StarRating` | KaimonSlate.jl, `examples/extensions/StarRating` | public |
+| `CesiumSlate` | CesiumSlate.jl | private |
+| `GiacSlate` | GiacSlate.jl | private |
+| `GlobeSlate` | GlobeSlate.jl | private |
 | `SlateAssess` | SlateAssess.jl | private |
+| `SlateBench` | SlateBench.jl | private |
+| `SlatePlotly` | SlatePlotly.jl | private |
 
 Installing a private package needs git credentials for GitHub. The registry records repository
 locations as **HTTPS** URLs, so an SSH key alone is not sufficient — the simplest route is:
