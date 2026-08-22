@@ -1,0 +1,27 @@
+# Curator overlay template. Copy to `<PackageName>.toml` in this directory to apply it — the build
+# looks for an exact `<Name>.toml`, so this `.template` is ignored.
+#
+# An overlay is the registry maintainer's layer: it overrides the package's own presentation, field
+# by field, and is the only layer that publishes for a package whose repository isn't public. Use
+# it to organise the shelf, or to give a bare package a usable description without waiting on its
+# author. Everything here is optional; an overlay that sets one field leaves the rest alone.
+
+# Same keys a package's own SlateExtension.toml uses.
+# title      = "Friendlier Name"
+# tagline    = "One line, shown on the card"
+# categories = ["visualization"]
+# category   = "visualization"        # shorthand for a one-element `categories`
+# icon       = "🌍"
+# screenshots = ["https://…/shot.png"]
+# docs       = "https://…"
+# snippet    = """
+# using ThePackage
+# """
+
+# ── maintainer-only ───────────────────────────────────────────────────────────
+# Omit the package from the gallery entirely. It stays installable by name; it just isn't browsable.
+# hidden = true
+
+# Publish prose harvested from a repository that ISN'T anonymously readable. Off by default because
+# catalog.json is public — see the disclosure note in the README.
+# publish_private_prose = true

@@ -1,0 +1,6 @@
+# The published catalog artifact — catalog.json plus every mirrored screenshot and video.
+#
+# Built fresh by CI on each run and deployed straight to Pages, so it is never committed. This
+# registry stays what it is: package metadata, in text. Binary assets belong to whoever authored
+# them; the build fetches them at publish time and serves copies from Pages.
+docs/

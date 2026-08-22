@@ -1,0 +1,58 @@
+# Build and publish catalog.json — the data behind Slate's Extensions gallery.
+#
+# Runs on every registry change (a new package or version), on a schedule (so a package's own
+# README/SlateExtension.toml edits reach the catalog without a registry commit), and on demand.
+#
+# The build harvests each package's DEFAULT BRANCH. Anything it can't read anonymously is published
+# with registry facts only — see the disclosure note in ci/catalog.jl.
+name: catalog
+
+on:
+  push:
+    branches: [main]
+  schedule:
+    - cron: '17 6 * * *'
+  workflow_dispatch:
+
+# One deployment at a time; let a running publish finish rather than cancelling it half-done.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: julia-actions/setup-julia@v2
+        with:
+          version: '1'
+      - name: Test the builder
+        run: julia --color=yes --startup-file=no ci/runtests.jl
+      - name: Build catalog.json
+        run: julia --color=yes --startup-file=no ci/catalog.jl . docs/catalog.json
+      - name: Show what was published
+        run: |
+          julia --startup-file=no -e '
+            using TOML
+            d = read("docs/catalog.json", String)
+            println("bytes: ", length(d))
+          '
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: docs
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
