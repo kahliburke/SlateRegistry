@@ -11,5 +11,6 @@ description = "Kaimon Slate extension packages"
 34dae1dd-9e9d-4399-81aa-9d72c5d23232 = { name = "SlateBench", path = "S/SlateBench" }
 4293ad4b-9d1e-41b5-a698-562d6dfeffbe = { name = "SlateAssess", path = "S/SlateAssess" }
 48bdd467-e615-4c42-bca2-e391cca8438c = { name = "SlateAFM", path = "S/SlateAFM" }
+8b1dd0a1-40b8-40bb-ae57-fd8e602dd54e = { name = "MermaidSlate", path = "M/MermaidSlate" }
 9172b072-6bcf-488b-b185-96c3319d1521 = { name = "BonitoSlate", path = "B/BonitoSlate" }
 f4c9f34b-fa6a-4506-9309-e8c0bac809fa = { name = "GiacSlate", path = "G/GiacSlate" }
