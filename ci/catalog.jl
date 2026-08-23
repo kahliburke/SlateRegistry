@@ -161,8 +161,16 @@ registry is public, so anything not anonymously readable is treated as private."
 function anonymously_readable(repo::AbstractString)
     isempty(repo) && return false
     env = copy(ENV)
-    env["GIT_TERMINAL_PROMPT"] = "0"; env["GIT_ASKPASS"] = "true"; env["GIT_CONFIG_GLOBAL"] = "/dev/null"
-    ok, _ = run_capture(setenv(`git ls-remote --exit-code -h $repo`, env); timeout = 45)
+    env["GIT_TERMINAL_PROMPT"] = "0"      # never block on a username prompt
+    env["GIT_ASKPASS"] = "true"           # ...or a password one
+    env["GIT_CONFIG_GLOBAL"] = "/dev/null"
+    # The SYSTEM config matters too, and forgetting it makes this probe LIE on a developer machine:
+    # macOS ships an osxkeychain credential helper there, so a private repo the developer has access
+    # to answers as public locally while CI correctly sees it as private. `-c credential.helper=`
+    # clears any helper that survives regardless of which config file declared it.
+    env["GIT_CONFIG_SYSTEM"] = "/dev/null"
+    cmd = `git -c credential.helper= -c credential.useHttpPath=false ls-remote --exit-code -h $repo`
+    ok, _ = run_capture(setenv(cmd, env); timeout = 45)
     return ok
 end
 
@@ -484,11 +492,31 @@ Write `build(...)` to `out`. With `mirror=true` (the default) card imagery is co
 `assets/` tree NEXT TO `out` and the entries are rewritten to point at it, so the whole artifact —
 catalog and pictures — deploys and is served from one place.
 """
-function write_catalog(out::AbstractString; regdir::AbstractString = ".", mirror::Bool = true, kw...)
-    mkpath(dirname(out))
-    cat = build(regdir; mirror_to = (mirror ? dirname(out) : nothing), kw...)
+function write_catalog(out::AbstractString; regdir::AbstractString = ".", mirror::Bool = true,
+                       site::Bool = true, kw...)
+    outdir = dirname(out)
+    mkpath(outdir)
+    cat = build(regdir; mirror_to = (mirror ? outdir : nothing), kw...)
     open(out, "w") do io; json(io, cat); end
+    site && copy_site!(regdir, outdir)
     return out
+end
+
+"""
+    copy_site!(regdir, outdir)
+
+Copy the static browse page (`ci/site/`) in beside the catalog. It reads `catalog.json` from its own
+origin at run time, so the page is deployed as-is and can never disagree with the notebook gallery —
+both render the same document. Kept in the repo and copied at build time because the artifact
+directory itself is generated and gitignored.
+"""
+function copy_site!(regdir::AbstractString, outdir::AbstractString)
+    src = joinpath(regdir, "ci", "site")
+    isdir(src) || return outdir
+    for f in readdir(src)
+        cp(joinpath(src, f), joinpath(outdir, f); force = true)
+    end
+    return outdir
 end
 
 end # module

@@ -1,0 +1,275 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Slate Extensions</title>
+<meta name="description" content="Extension packages for Kaimon Slate notebooks — controls, output renderers, and domain tooling." />
+<!--
+  The browsable face of the catalog. Deployed alongside catalog.json in the same Pages artifact and
+  fetches it same-origin, so this page is one static file with no build step and no dependencies —
+  it can never disagree with what the notebook gallery shows, because it reads the same document.
+
+  Deliberately NOT an app: there is no Install button, because a web page cannot install into your
+  notebook. It shows you what exists and the two commands that add it.
+-->
+<style>
+  :root {
+    --bg:#0b0e18; --panel:#0f1320; --panel2:#141828; --line:#2a2e40; --line2:#232739;
+    --text:#e6e9f5; --dim:#aab1c9; --dim2:#8a90a8; --faint:#6a7090;
+    --accent:#7cc0ff; --btn:#2f6feb; --warn:#e8a13f; --ok:#56d364;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--text);
+    font:15px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Helvetica,Arial,sans-serif;}
+  code,pre{font-family:Menlo,Consolas,monospace}
+  a{color:var(--accent);text-decoration:none} a:hover{text-decoration:underline}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 20px}
+
+  header{border-bottom:1px solid var(--line2);padding:38px 0 26px;background:var(--panel)}
+  h1{margin:0 0 6px;font-size:1.7rem;letter-spacing:-.01em}
+  .sub{color:var(--dim);font-size:.94rem;margin:0 0 20px;max-width:62ch}
+  .install{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:12px 14px;
+    font-size:.78rem;color:var(--dim);overflow-x:auto}
+  .install b{color:var(--text);font-weight:600}
+  .install pre{margin:6px 0 0;color:#cdd3e6;white-space:pre}
+
+  .controls{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:22px 0 18px}
+  #q{flex:1;min-width:220px;background:var(--panel2);border:1px solid var(--line);border-radius:9px;
+    color:var(--text);padding:9px 12px;font-size:.86rem}
+  #q:focus{outline:none;border-color:#3f6fd0}
+  .chips{display:flex;gap:6px;flex-wrap:wrap}
+  .chip{font-size:.72rem;padding:4px 10px;border-radius:9px;cursor:pointer;color:var(--dim2);
+    background:var(--panel2);border:1px solid var(--line);user-select:none}
+  .chip:hover{color:var(--text)}
+  .chip.on{color:var(--accent);border-color:rgba(124,192,255,.45);background:rgba(124,192,255,.1)}
+
+  /* `align-items:start` so a card with no screenshot stays short instead of being stretched to
+     match an illustrated neighbour in the same row. Most listings have no imagery. */
+  .grid{display:grid;gap:14px;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));
+    align-items:start;padding-bottom:48px}
+  .card{background:var(--panel);border:1px solid var(--line2);border-radius:12px;overflow:hidden;
+    cursor:pointer;display:flex;flex-direction:column;transition:border-color .12s,transform .12s}
+  .card:hover{border-color:#3a4058;transform:translateY(-1px)}
+  .thumb{width:100%;height:150px;object-fit:cover;object-position:top;display:block;
+    background:var(--bg);border-bottom:1px solid var(--line2)}
+  /* No screenshot: a slim initial strip rather than a tall empty box pretending an image is coming. */
+  .thumb.none{height:56px;display:flex;align-items:center;justify-content:center;font-size:1.25rem;color:#3a4058}
+  .cbody{padding:13px 15px 15px}
+  .ctitle{display:flex;align-items:center;gap:8px;margin-bottom:5px}
+  .ctitle h3{margin:0;font-size:.98rem;font-weight:600}
+  .ver{color:var(--faint);font-size:.74rem;font-family:Menlo,monospace}
+  .blurb{color:var(--dim2);font-size:.8rem;line-height:1.45;
+    display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+  .cats{display:flex;gap:5px;flex-wrap:wrap;margin-top:9px}
+  .cat{font-size:.65rem;padding:1px 7px;border-radius:8px;color:var(--dim2);
+    background:var(--panel2);border:1px solid var(--line)}
+  .pill{font-size:.62rem;padding:1px 7px;border-radius:8px;font-weight:600}
+  .pill.priv{color:var(--warn);background:rgba(232,161,63,.13);border:1px solid rgba(232,161,63,.3)}
+  .empty{color:var(--faint);padding:60px 0;text-align:center}
+
+  /* detail */
+  .bg{display:none;position:fixed;inset:0;z-index:20;background:rgba(6,8,16,.82);overflow-y:auto;padding:32px 16px}
+  .bg.show{display:block}
+  .modal{max-width:820px;margin:0 auto;background:var(--panel);border:1px solid var(--line);
+    border-radius:14px;padding:0 0 26px;box-shadow:0 24px 70px rgba(0,0,0,.6)}
+  .mhead{display:flex;align-items:center;gap:12px;padding:18px 24px;border-bottom:1px solid var(--line2);
+    position:sticky;top:0;background:var(--panel);border-radius:14px 14px 0 0;z-index:1}
+  .mhead h2{margin:0;font-size:1.2rem}
+  .close{margin-left:auto;cursor:pointer;color:var(--dim2);font-size:1.2rem;line-height:1;padding:2px 6px}
+  .close:hover{color:var(--text)}
+  .mbody{padding:20px 24px 0}
+  .tag{color:var(--dim);font-size:.95rem;margin:0 0 16px}
+  .media{width:100%;max-height:420px;object-fit:cover;object-position:top;display:block;
+    border-radius:10px;border:1px solid var(--line);background:var(--bg);margin-bottom:14px}
+  .desc{color:#c2c8dd;font-size:.88rem;margin-bottom:18px;white-space:pre-wrap}
+  .sec{color:var(--faint);font-size:.68rem;text-transform:uppercase;letter-spacing:.06em;margin:20px 0 8px}
+  ul.prov{margin:0;padding-left:20px} ul.prov li{color:#c2c8dd;font-size:.84rem;margin-bottom:3px}
+  pre.snip{background:var(--bg);border:1px solid var(--line2);border-radius:9px;padding:12px 14px;
+    color:#cdd3e6;font-size:.78rem;overflow-x:auto;margin:0}
+  .links{display:flex;gap:16px;flex-wrap:wrap;margin-top:18px;font-size:.84rem}
+  .note{color:var(--faint);font-size:.78rem;margin-top:14px}
+  .icon{width:34px;height:34px;flex:0 0 34px;border-radius:8px;background:var(--panel2);display:flex;
+    align-items:center;justify-content:center;font-size:1.05rem;overflow:hidden}
+  .icon img{width:100%;height:100%;object-fit:cover}
+  footer{border-top:1px solid var(--line2);color:var(--faint);font-size:.78rem;padding:22px 0 40px}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <h1>Slate Extensions</h1>
+    <p class="sub">Extension packages for <a href="https://github.com/kahliburke/KaimonSlate.jl">Kaimon Slate</a>
+      notebooks — <code>@bind</code> controls, output renderers and domain tooling. Browse them here, or
+      inside a notebook with <b>⌘K → Extensions</b>, which installs them for you.</p>
+    <div class="install">
+      <b>Adding one by hand</b>, from the Pkg REPL:
+      <pre>pkg&gt; registry add https://github.com/kahliburke/SlateRegistry
+pkg&gt; add &lt;PackageName&gt;</pre>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="controls">
+    <input id="q" placeholder="Search extensions…" autocomplete="off" />
+    <div class="chips" id="chips"></div>
+  </div>
+  <div class="grid" id="grid"></div>
+</div>
+
+<footer><div class="wrap">
+  <span id="stamp"></span> ·
+  <a href="https://github.com/kahliburke/SlateRegistry">registry</a> ·
+  <a href="./catalog.json">catalog.json</a>
+</div></footer>
+
+<div class="bg" id="bg"><div class="modal" id="modal"></div></div>
+
+<script>
+const esc = (s) => String(s == null ? '' : s).replace(/[&<>"]/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+let ENTRIES = [], CAT = '', Q = '';
+
+fetch('./catalog.json', { cache: 'no-cache' })
+  .then((r) => r.json())
+  .then((d) => {
+    ENTRIES = d.entries || [];
+    document.getElementById('stamp').textContent =
+      `${ENTRIES.length} extension${ENTRIES.length === 1 ? '' : 's'}` +
+      (d.generated ? ` · updated ${String(d.generated).slice(0, 10)}` : '');
+    renderChips();
+    render();
+    openFromHash();
+  })
+  .catch((e) => {
+    document.getElementById('grid').innerHTML =
+      `<div class="empty">Could not load the catalog.<br><small>${esc(e.message)}</small></div>`;
+  });
+
+const shown = () => ENTRIES.filter((e) => {
+  if (CAT && !(e.categories || []).includes(CAT)) return false;
+  if (!Q) return true;
+  return [e.name, e.title, e.tagline, e.description, ...(e.categories || [])]
+    .some((f) => f && String(f).toLowerCase().includes(Q));
+});
+
+function renderChips() {
+  const cats = [...new Set(ENTRIES.flatMap((e) => e.categories || []))].sort();
+  document.getElementById('chips').innerHTML =
+    [['', 'all'], ...cats.map((c) => [c, c])]
+      .map(([v, label]) => `<span class="chip${CAT === v ? ' on' : ''}" data-cat="${esc(v)}">${esc(label)}</span>`).join('');
+}
+
+// A card's picture: its first screenshot, else the icon, else the initial. Most listings have no
+// imagery at all, so the no-image case has to look deliberate rather than broken.
+function thumb(e) {
+  if ((e.screenshots || []).length) return `<img class="thumb" src="${esc(e.screenshots[0])}" alt="" loading="lazy">`;
+  const glyph = e.icon && !/^https?:/.test(e.icon) ? e.icon : (e.name || '?')[0];
+  return `<div class="thumb none">${esc(glyph)}</div>`;
+}
+function iconEl(e) {
+  return /^https?:/.test(e.icon || '')
+    ? `<span class="icon"><img src="${esc(e.icon)}" alt=""></span>`
+    : `<span class="icon">${esc(e.icon || (e.name || '?')[0])}</span>`;
+}
+
+function render() {
+  const list = shown();
+  document.getElementById('grid').innerHTML = list.length ? list.map((e) => `
+    <div class="card" data-name="${esc(e.name)}">
+      ${thumb(e)}
+      <div class="cbody">
+        <div class="ctitle">
+          <h3>${esc(e.title || e.name)}</h3>
+          <span class="ver">${esc(e.version || '')}</span>
+          ${e.visibility === 'private' ? '<span class="pill priv">private</span>' : ''}
+        </div>
+        <div class="blurb">${esc(e.tagline || e.description || 'No description yet.')}</div>
+        ${(e.categories || []).length ? `<div class="cats">${e.categories.map((c) => `<span class="cat">${esc(c)}</span>`).join('')}</div>` : ''}
+      </div>
+    </div>`).join('') : '<div class="empty">Nothing matches.</div>';
+}
+
+function detail(e) {
+  const shots = e.screenshots || [];
+  // With a video the first screenshot is its poster, so it isn't also shown again below — and
+  // `preload="none"` means opening a card downloads the poster only, never the video.
+  const stills = e.video ? shots.slice(1) : shots;
+  const repo = (e.repo || '').replace(/\.git$/, '');
+  const exUrl = exampleUrl(e, repo);
+  return `
+    <div class="mhead">
+      ${iconEl(e)}
+      <h2>${esc(e.title || e.name)}</h2>
+      <span class="ver">${esc(e.version || '')}</span>
+      ${e.visibility === 'private' ? '<span class="pill priv">private repository</span>' : ''}
+      <span class="close" id="x">✕</span>
+    </div>
+    <div class="mbody">
+      ${e.tagline ? `<p class="tag">${esc(e.tagline)}</p>` : ''}
+      ${e.video ? `<video class="media" src="${esc(e.video)}" poster="${esc(shots[0] || '')}" preload="none" controls loop muted playsinline></video>` : ''}
+      ${stills.map((s) => `<img class="media" src="${esc(s)}" alt="" loading="lazy">`).join('')}
+      ${e.description ? `<div class="desc">${esc(e.description)}</div>` : ''}
+      ${!e.description && !e.tagline ? `<div class="desc" style="color:var(--faint)">This extension hasn't published a description yet.</div>` : ''}
+
+      <div class="sec">Install</div>
+      <pre class="snip">pkg&gt; registry add https://github.com/kahliburke/SlateRegistry
+pkg&gt; add ${esc(e.name)}</pre>
+
+      ${(e.provides || []).length ? `<div class="sec">Provides</div><ul class="prov">${e.provides.map((p) => `<li>${esc(p)}</li>`).join('')}</ul>` : ''}
+      ${e.snippet ? `<div class="sec">Getting started</div><pre class="snip">${esc(e.snippet.trim())}</pre>` : ''}
+
+      <div class="links">
+        ${repo ? `<a href="${esc(repo)}" target="_blank" rel="noopener">Source ↗</a>` : ''}
+        ${e.docs ? `<a href="${esc(e.docs)}" target="_blank" rel="noopener">Documentation ↗</a>` : ''}
+        ${exUrl ? `<a href="${esc(exUrl)}" target="_blank" rel="noopener">Example notebook ↗</a>` : ''}
+      </div>
+      ${e.visibility === 'private'
+        ? `<div class="note">This package's repository isn't public, so installing it needs access to it — and
+           its description here is limited to what the registry itself records.</div>` : ''}
+      ${e.julia ? `<div class="note">Requires Julia ${esc(e.julia)}.</div>` : ''}
+    </div>`;
+}
+
+function exampleUrl(e, repo) {
+  const ex = e.example;
+  if (!ex || !repo) return null;
+  if (/^https?:/.test(ex)) return ex;
+  const m = repo.match(/github\.com[:/]([^/]+)\/(.+?)$/);
+  if (!m) return null;
+  return `https://github.com/${m[1]}/${m[2]}/blob/HEAD/${e.subdir ? e.subdir + '/' : ''}${ex}`;
+}
+
+function open(name, push) {
+  const e = ENTRIES.find((x) => x.name === name);
+  if (!e) return;
+  document.getElementById('modal').innerHTML = detail(e);
+  document.getElementById('bg').classList.add('show');
+  document.getElementById('x').onclick = close;
+  if (push) history.replaceState(null, '', '#' + name);
+}
+function close() {
+  document.getElementById('bg').classList.remove('show');
+  history.replaceState(null, '', location.pathname + location.search);
+}
+// A deep link opens straight onto one extension — the point of having per-package URLs to share.
+function openFromHash() {
+  const n = decodeURIComponent(location.hash.replace(/^#/, ''));
+  if (n) open(n, false);
+}
+
+document.getElementById('grid').addEventListener('click', (ev) => {
+  const c = ev.target.closest('.card'); if (c) open(c.dataset.name, true);
+});
+document.getElementById('chips').addEventListener('click', (ev) => {
+  const c = ev.target.closest('.chip'); if (!c) return;
+  CAT = CAT === c.dataset.cat ? '' : c.dataset.cat; renderChips(); render();
+});
+document.getElementById('q').addEventListener('input', (ev) => { Q = ev.target.value.trim().toLowerCase(); render(); });
+document.getElementById('bg').addEventListener('mousedown', (ev) => { if (ev.target.id === 'bg') close(); });
+document.addEventListener('keydown', (ev) => { if (ev.key === 'Escape') close(); });
+window.addEventListener('hashchange', openFromHash);
+</script>
+</body>
+</html>
