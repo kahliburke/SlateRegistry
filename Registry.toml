@@ -7,6 +7,7 @@ description = "Kaimon Slate extension packages"
 037ed0f0-9d4a-4e15-a26b-b7623adf1440 = { name = "CesiumSlate", path = "C/CesiumSlate" }
 06afbefc-9613-4bb7-bc4a-f7a72d2076db = { name = "StarRating", path = "S/StarRating" }
 141e1fc3-13f6-4de8-b22a-97670e9194c6 = { name = "SlatePlotly", path = "S/SlatePlotly" }
+16f7ad8c-d856-4500-a529-cf73ac8ee665 = { name = "VolumeRendering", path = "V/VolumeRendering" }
 3407f95d-69fb-4d30-a5a8-720a6642c965 = { name = "GlobeSlate", path = "G/GlobeSlate" }
 34dae1dd-9e9d-4399-81aa-9d72c5d23232 = { name = "SlateBench", path = "S/SlateBench" }
 4293ad4b-9d1e-41b5-a698-562d6dfeffbe = { name = "SlateAssess", path = "S/SlateAssess" }
