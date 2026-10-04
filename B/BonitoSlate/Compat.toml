@@ -9,4 +9,9 @@ SlateExtensionsBase = "0.10"
 
 ["0.2-0"]
 Bonito = "5"
+
+["0.2.0"]
 SlateExtensionsBase = "0.10.5-0.10"
+
+["0.2.1-0"]
+SlateExtensionsBase = "0.10.5-0.11"
